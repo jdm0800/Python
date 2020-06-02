@@ -35,6 +35,7 @@ jointangles = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 DH = dhparams(d, a, alpha, theta)
 
 # Do it for all values utilising numpy
+# Tried indexing to just use one value to create one Transfrom matrix and changed the dimension to [4x4] but still errored
 T = transmat(DH.d, DH.a, DH.alpha, DH.theta, jointangles)
 
 print(T)
