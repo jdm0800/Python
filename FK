@@ -1,10 +1,8 @@
-import scipy
 import math as mt
 import numpy as np
 
 
-# Need to create class that will structure what i put in so that it's callable like a struct.
-# These represent mechanical attributes and there will be multiple of them all with the same layout.
+
 class dhparams:
     def __init__(self, offset, length, twist, joint):
         print("DH parameters initialised; offsets:",offset, "lengths: ", length, "twists: " , twist, "joints: ", joint)
@@ -13,29 +11,37 @@ class dhparams:
         self.alpha = twist
         self.theta = joint
 
-# Need a function, where I pass in 5 values, and it will create a 4x4 array,
-# this needs to be iterable as well: for offset(1:n) etc.
 
 def transmat(offset, length, twist, joint, jointangle):
-    t = np.empty([6, 4, 4])
-    t[0, 0] = np.cos(jointangle)*np.cos(joint) - np.sin(jointangle)*np.sin(joint)*np.cos(alpha)
-    t[0, 1] = -np.sin(jointangle)*np.cos(joint) - np.cos(jointangle)*np.sin(joint)*np.cos(alpha)
-    t[0, 2] = np.sin(joint)*np.sin(alpha)
-    t[0, 3] = length*np.cos(joint)
+    t = np.empty([jointangle.size, 4, 4])
+    t[:, 0, 0] = np.cos(jointangle)*np.cos(joint) - np.sin(jointangle)*np.sin(joint)*np.cos(alpha)
+    t[:, 1, 0] = -np.sin(jointangle)*np.cos(joint) - np.cos(jointangle)*np.sin(joint)*np.cos(alpha)
+    t[:, 2, 0] = np.sin(joint)*np.sin(alpha)
+    t[:, 3, 0] = length*np.cos(joint)
+    t[:, 0, 1] = np.cos(jointangle) * np.sin(joint) + np.sin(jointangle) * np.cos(joint) * np.cos(alpha)
+    t[:, 1, 1] = -np.sin(jointangle) * np.sin(joint) + np.cos(jointangle) * np.cos(joint) * np.cos(alpha)
+    t[:, 2, 1] = -np.cos(joint) * np.sin(alpha)
+    t[:, 3, 1] = length * np.cos(joint)
+    t[:, 0, 2] = np.sin(jointangle)*np.sin(twist)
+    t[:, 1, 2] = np.cos(jointangle)*np.sin(twist)
+    t[:, 2, 2] = np.cos(twist)
+    t[:, 3, 2] = offset
+    t[:, 0, 3] = np.zeros([1, jointangle.size])
+    t[:, 1, 3] = np.zeros([1, jointangle.size])
+    t[:, 2, 3] = np.zeros([1, jointangle.size])
+    t[:, 3, 3] = np.ones(jointangle.size)
     return t
 
-# Tried first just creating the parameters in arrays where the length represents the number of joints
-d = np.array([0.0, 0.2784, 0.0, 0.0, 0.2906, 0.0])
-a = np.array([0.0, 0.056, 0.205, -0.056, 0.0, -0.065])
-alpha = np.array([0.0, mt.pi/2, 0.0, -mt.pi/2, mt.pi/2, -mt.pi/2])
-theta = np.array([0.0, 0.0, mt.pi/2, -mt.pi/2, 0.0, 0.0])
-jointangles = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-# initialise DH as the class with those sets of variables.
+d = np.array([0.0, 0.2784, 0.0, 0.0, 0.2906, 0.0, 0.0])
+a = np.array([0.0, 0.056, 0.205, -0.056, 0.0, -0.065, 0.1046])
+alpha = np.array([0.0, mt.pi/2, 0.0, -mt.pi/2, mt.pi/2, -mt.pi/2, 0.0])
+theta = np.array([0.0, 0.0, mt.pi/2, -mt.pi/2, 0.0, 0.0, 0.0])
+
+
+jointangles = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
 DH = dhparams(d, a, alpha, theta)
 
-# Do it for all values utilising numpy
-# Tried indexing to just use one value to create one Transfrom matrix and changed the dimension to [4x4] but still errored
-T = transmat(DH.d, DH.a, DH.alpha, DH.theta, jointangles)
 
-print(T)
+T = transmat(DH.d, DH.a, DH.alpha, DH.theta, jointangles)
