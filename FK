@@ -14,13 +14,13 @@ class dhparams:
 
 def transmat(offset, length, twist, joint, jointangle):
     t = np.empty([jointangle.size, 4, 4])
-    t[:, 0, 0] = np.cos(jointangle)*np.cos(joint) - np.sin(jointangle)*np.sin(joint)*np.cos(alpha)
-    t[:, 1, 0] = -np.sin(jointangle)*np.cos(joint) - np.cos(jointangle)*np.sin(joint)*np.cos(alpha)
+    t[:, 0, 0] = np.cos(jointangle)*np.cos(joint) - np.sin(jointangle)*np.sin(joint)*np.cos(twist)
+    t[:, 1, 0] = -np.sin(jointangle)*np.cos(joint) - np.cos(jointangle)*np.sin(joint)*np.cos(twist)
     t[:, 2, 0] = np.sin(joint)*np.sin(alpha)
     t[:, 3, 0] = length*np.cos(joint)
-    t[:, 0, 1] = np.cos(jointangle) * np.sin(joint) + np.sin(jointangle) * np.cos(joint) * np.cos(alpha)
-    t[:, 1, 1] = -np.sin(jointangle) * np.sin(joint) + np.cos(jointangle) * np.cos(joint) * np.cos(alpha)
-    t[:, 2, 1] = -np.cos(joint) * np.sin(alpha)
+    t[:, 0, 1] = np.cos(jointangle) * np.sin(joint) + np.sin(jointangle) * np.cos(joint) * np.cos(twist)
+    t[:, 1, 1] = -np.sin(jointangle) * np.sin(joint) + np.cos(jointangle) * np.cos(joint) * np.cos(twist)
+    t[:, 2, 1] = -np.cos(joint) * np.sin(twist)
     t[:, 3, 1] = length * np.cos(joint)
     t[:, 0, 2] = np.sin(jointangle)*np.sin(twist)
     t[:, 1, 2] = np.cos(jointangle)*np.sin(twist)
